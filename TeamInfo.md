@@ -4,16 +4,16 @@
 
 |   Info      |        Description     |
 | ----------- | ---------------------- |
-| TeamID      |        Team-000        |
-| TeamName    |         sample         |
-| Captain     |       Abdu Alawini     |
-| Captain     |  alawini@illinois.edu  |
-| Member1     |        Kevin Pei       |
-| Member1     |   kevin2@illinois.edu  |
-| Member2     |                        |
-| Member2     |                        |
-| Member3     |                        |
-| Member3     |                        |
+| TeamID      |        team-117        |
+| TeamName    |        team-117        |
+| Captain     |       Kaylan Wang      |
+| Captain     |  kaylanw4@illinois.edu |
+| Member1     |     Gopinath Balaji    |
+| Member1     |  gbalaji4@illinois.edu |
+| Member2     |       Megha Chada      |
+| Member2     |  megharc2@illinois.edu |
+| Member3     |       Krish Patel      |
+| Member3     |  krishp2@illinois.edu  |
 
 ## Project Information
 
