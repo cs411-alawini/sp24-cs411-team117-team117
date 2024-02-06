@@ -8,12 +8,10 @@
 | TeamName    |        team-117        |
 | Captain     |       Kaylan Wang      |
 | Captain     |  kaylanw4@illinois.edu |
-| Member1     |     Gopinath Balaji    |
-| Member1     |  gbalaji4@illinois.edu |
-| Member2     |       Megha Chada      |
-| Member2     |  megharc2@illinois.edu |
-| Member3     |       Krish Patel      |
-| Member3     |  krishp2@illinois.edu  |
+| Member1     |       Megha Chada      |
+| Member1     |  megharc2@illinois.edu |
+| Member2     |       Krish Patel      |
+| Member2     |  krishp2@illinois.edu  |
 
 ## Project Information
 
