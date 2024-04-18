@@ -2,7 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql2');
 var path = require('path');
-
+//connection stuff
 var connection = mysql.createConnection({
     host: '35.238.150.143',
     user: 'root',
@@ -18,6 +18,7 @@ connection.connect(function(err) {
     console.log('Connected to MySQL database');
 });
 
+//////////////////////////// Edit after this. Everything above stays the same //////////////////////////
 var app = express();
 
 // Set up ejs view engine
@@ -45,8 +46,28 @@ app.get('/api/attendance', function(req, res) {
     });
 });
 
+app.get('/api/search', function(req, res) {
+    var title = req.query.title; // Extract the title from the query parameters
+    if (!title) {
+        res.status(400).send({ message: 'Title parameter is missing' });
+        return;
+    }
 
+    var sql = 'SELECT * FROM title WHERE primaryTitle = ?'; // Assuming 'Title' is the column name
+
+    connection.query(sql, [title], function(err, results) {
+        if (err) {
+            console.error('Error searching for title:', err);
+            res.status(500).send({ message: 'Error searching for title', error: err });
+            return;
+        }
+        res.json(results);
+    });
+});
+
+//////////////////////////// Edit before this. Everything bellow stays the same //////////////////////////
+//porting stuff
 
 app.listen(80, function () {
-    console.log('Node app is running on port 80');
+  console.log('Node app is running on port 80');
 });
