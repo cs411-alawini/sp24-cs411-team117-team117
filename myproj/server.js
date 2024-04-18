@@ -1,65 +1,52 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+var express = require('express');
+var bodyParser = require('body-parser');
+var mysql = require('mysql2');
+var path = require('path');
 
-const app = express();
-
-// Multer configuration for handling file uploads
-const upload = multer({ dest: 'uploads/' });
-
-// MySQL connection
-const connection = mysql.createConnection({
-  host: '35.238.150.143',
-  user: 'root',
-  password: 'team117',
-  database: 'netflix_wrapped'
+var connection = mysql.createConnection({
+    host: '35.238.150.143',
+    user: 'root',
+    password: 'team117',
+    database: 'netflix_wrapped'
 });
 
-connection.connect();
+connection.connect(function(err) {
+    if (err) {
+        console.error('Error connecting to database:', err);
+        return;
+    }
+    console.log('Connected to MySQL database');
+});
 
-// Body parser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+var app = express();
 
-// Serve static files
+// Set up ejs view engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the CSV upload application!');
+app.get('/', function(req, res) {
+    res.render('index'); // Assuming you have an index.ejs file in the 'views' directory
 });
 
-// Route for uploading CSV file
-app.post('/upload', upload.single('csvfile'), (req, res) => {
-  const filePath = req.file.path;
-  // Process the CSV file and insert data into the database
-  fs.readFile(filePath, 'utf-8', (err, data) => {
-    if (err) {
-      return res.status(500).send('Error reading CSV file');
-    }
-    // Parse CSV data and insert into user_info table
-    const rows = data.split('\n').slice(1); // Skip header row
-    const values = rows.map(row => {
-      const [Title, Date, Season, Episode] = row.split(',');
-      return [Title, Date, Season, Episode];
+app.get('/api/attendance', function(req, res) {
+    var sql = 'SELECT * FROM user_info'; // Assuming 'user_info' is your table name
+
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching attendance data:', err);
+            res.status(500).send({ message: 'Error fetching attendance data', error: err });
+            return;
+        }
+        res.json(results);
     });
-    const sql = 'INSERT INTO user_info (Title, Date, Season, Episode) VALUES ?';
-    connection.query(sql, [values], (err, result) => {
-      if (err) {
-        return res.status(500).send('Error inserting data into database');
-      }
-      res.redirect('/success');
-    });
-  });
 });
 
-// Route to handle success page
-app.get('/success', (req, res) => {
-  res.send('Data uploaded successfully!');
-});
 
-// Start server
+
 app.listen(80, function () {
     console.log('Node app is running on port 80');
 });

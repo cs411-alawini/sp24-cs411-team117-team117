@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload CSV</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Titles</title>
 </head>
 <body>
-  <h1>Upload CSV File</h1>
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="csvfile" accept=".csv">
-    <button type="submit">Upload</button>
-  </form>
+    <h1>User Titles</h1>
+    <ul id="titlesList"></ul>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: '/api/attendance',
+                method: 'GET',
+                success: function(data) {
+                    data.forEach(function(row) {
+                        $('#titlesList').append('<li>' + row.Title + '</li>');
+                    });
+                },
+                error: function() {
+                    alert('Failed to load user titles.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
