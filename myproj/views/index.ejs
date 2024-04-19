@@ -120,6 +120,32 @@
                 // Load all titles
                 loadTitles();
             });
+
+             // Event listener for update button click
+            $('#updateBtn').click(function() {
+                var id = $('#updateId').val();
+                var present = $('#updatePresent').val(); // Assuming present value is >
+
+                // Perform update
+                $.ajax({
+                    url: '/api/netflix-wrapped/modify/' + id,
+                    method: 'POST',
+                    data: { present: present },
+                    success: function(response) {
+                         alert(response.message);
+                         // Reload titles after successful update
+                         loadTitles();
+                },
+                error: function() {
+                    alert('Failed to update attendance record.');
+                }
+            });
+        });
+        });
+    </script>
+</body>
+</html>
+
         });
     </script>
 </body>

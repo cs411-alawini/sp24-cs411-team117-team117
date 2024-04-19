@@ -65,6 +65,31 @@ app.get('/api/search', function(req, res) {
     });
 });
 
+app.post('/api/netflix-wrapped/modify/:id', function(req, res) {
+  var id = req.params.id;
+  var title = req.body.title;
+  var date = req.body.date;
+  var season = req.body.season;
+  var episode = req.body.episode;
+  var titleType = req.body.titleType;
+
+  var sql = 'UPDATE user_info SET title = ?, date = ?, season = ?, episode = ?, titleType = ? WHERE id = ?';
+
+  connection.query(sql, [title, date, season, episode, titleType, id], function(err, result) {
+    if (err) {
+      console.error('Error modifying user info:', err);
+      res.status(500).send({ message: 'Error modifying user info', error: err });
+      return;
+    }
+    if(result.affectedRows === 0) {
+      // No rows were affected, meaning no record was found with that ID
+      res.status(404).send({ message: 'Record not found' });
+    } else {
+      res.send({ message: 'User info modified successfully' });
+    }
+  });
+});
+
 //////////////////////////// Edit before this. Everything bellow stays the same //////////////////////////
 //porting stuff
 
