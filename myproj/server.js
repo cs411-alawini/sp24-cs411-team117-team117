@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql2');
 var path = require('path');
+
 //connection stuff
 var connection = mysql.createConnection({
     host: '35.238.150.143',
@@ -65,34 +66,58 @@ app.get('/api/search', function(req, res) {
     });
 });
 
-app.post('/api/netflix-wrapped/modify/:id', function(req, res) {
-  var id = req.params.id;
-  var title = req.body.title;
-  var date = req.body.date;
-  var season = req.body.season;
-  var episode = req.body.episode;
-  var titleType = req.body.titleType;
-
-  var sql = 'UPDATE user_info SET title = ?, date = ?, season = ?, episode = ?, titleType = ? WHERE id = ?';
-
-  connection.query(sql, [title, date, season, episode, titleType, id], function(err, result) {
-    if (err) {
-      console.error('Error modifying user info:', err);
-      res.status(500).send({ message: 'Error modifying user info', error: err });
-      return;
-    }
-    if(result.affectedRows === 0) {
-      // No rows were affected, meaning no record was found with that ID
-      res.status(404).send({ message: 'Record not found' });
-    } else {
-      res.send({ message: 'User info modified successfully' });
-    }
-  });
+// New API endpoint to run the given SQL query
+app.get('/api/total-runtime', function(req, res) {
+    var sql = `
+        SELECT SUM(t.runtimeMinutes) as totaltime, SUBSTRING(u.Date, -2) as year, t.titleType
+        FROM user_info u
+        JOIN title t ON u.Title = t.primaryTitle AND u.titleType = t.titleType
+        WHERE t.titleType = 'movie'
+        GROUP BY year, t.titleType
+        UNION
+        SELECT SUM(t.runtimeMinutes) as totaltime, SUBSTRING(u.Date, -2) as year, t.titleType
+        FROM user_info u
+        JOIN title t ON u.Title = t.primaryTitle
+        WHERE t.runtimeMinutes < 70 AND t.runtimeMinutes > 19 AND t.titleType != 'movie'
+        GROUP BY year, t.titleType
+        ORDER BY year DESC;
+    `;
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching total runtime data:', err);
+            res.status(500).send({ message: 'Error fetching total runtime data', error: err });
+            return;
+        }
+        res.json(results);
+    });
 });
 
-//////////////////////////// Edit before this. Everything bellow stays the same //////////////////////////
+app.get('/api/calculate-runtime', function(req, res) {
+    var sql = `
+        SELECT SUM(t.runtimeMinutes) as totaltime, SUBSTRING(u.Date, -2) as year, t.titleType
+        FROM user_info u
+        JOIN title t ON u.Title = t.primaryTitle AND u.titleType = t.titleType
+        WHERE t.titleType = 'movie'
+        GROUP BY year, t.titleType
+        UNION
+        SELECT SUM(t.runtimeMinutes) as totaltime, SUBSTRING(u.Date, -2) as year, t.titleType
+        FROM user_info u
+        JOIN title t ON u.Title = t.primaryTitle
+        WHERE t.runtimeMinutes < 70 AND t.runtimeMinutes > 19 AND t.titleType != 'movie'
+        GROUP BY year, t.titleType
+        ORDER BY year DESC;
+    `;
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching total runtime data:', err);
+            res.status(500).send({ message: 'Error fetching total runtime data', error: err });
+            return;
+        }
+        res.json(results);
+    });
+});
+//////////////////////////// Edit before this. Everything below stays the same //////////////////////////
 //porting stuff
-
 app.listen(80, function () {
   console.log('Node app is running on port 80');
 });
