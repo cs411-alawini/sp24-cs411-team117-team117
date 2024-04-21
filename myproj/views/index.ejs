@@ -106,84 +106,44 @@
         <div class="inner-container">
             <ul id="titlesList"></ul>
         </div>
-        <button id="calculateRuntimeBtn">Calculate Runtime</button> <!-- Moved button outside inner container -->
+        <button id="calculateRuntimeBtn">Calculate Runtime</button>
+        <!-- Add the file upload input and button -->
+        <div class="upload-section">
+            <input type="file" id="csvFile" accept=".csv">
+            <button id="uploadBtn">Upload CSV</button>
+        </div>
     </div>
 
+    <!-- Your existing script imports -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Event listener for search button click
-            $('#searchBtn').click(function() {
-                var searchTerm = $('#searchInput').val().trim();
+            // Existing event listeners
 
-                if (searchTerm === '') {
-                    alert('Please enter a title name to search.');
+            // Event listener for upload button click
+            $('#uploadBtn').click(function() {
+                var fileInput = document.getElementById('csvFile');
+                var file = fileInput.files[0];
+
+                if (!file) {
+                    alert('Please select a CSV file to upload.');
                     return;
                 }
 
-                // Perform search
+                var formData = new FormData();
+                formData.append('csvFile', file);
+
                 $.ajax({
-                    url: '/api/search',
-                    method: 'GET',
-                    data: { title: searchTerm },
-                    success: function(data) {
-                        $('#titlesList').empty(); // Clear existing list
-                        if (data.length === 0) {
-                            $('#titlesList').append('<li>No results found.</li>');
-                        } else {
-                            data.forEach(function(row) {
-                                $('#titlesList').append('<li>' + row.primaryTitle + ' - ' + row.startYear + '</li>');
-                            });
-                        }
+                    url: '/api/upload-csv',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function() {
+                        alert('CSV file uploaded successfully.');
                     },
                     error: function() {
-                        alert('Failed to search for titles.');
-                    }
-                });
-            });
-
-            // Event listener for print all button click
-            $('#printAllBtn').click(function() {
-                $.ajax({
-                    url: '/api/attendance',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#titlesList').empty(); // Clear existing list
-                        if (data.length === 0) {
-                            $('#titlesList').append('<li>No titles found.</li>');
-                        } else {
-                            data.forEach(function(row) {
-                                $('#titlesList').append('<li>' + row.Title + '</li>');
-                            });
-                        }
-                    },
-                    error: function() {
-                        alert('Failed to load titles.');
-                    }
-                });
-            });
-
-            // Event listener for calculate runtime button click
-            $('#calculateRuntimeBtn').click(function() {
-                $.ajax({
-                    url: '/api/calculate-runtime',
-                    method: 'GET',
-                    success: function(data) {
-                        // Clear existing table
-                        $('#runtimeTable').remove();
-
-                        // Create and populate table
-                        var table = $('<table id="runtimeTable"></table>');
-                        var headerRow = $('<tr><th>Total Runtime</th><th>Year</th><th>Title Type</th></tr>');
-                        table.append(headerRow);
-                        data.forEach(function(row) {
-                            var newRow = $('<tr><td>' + row.totaltime + ' minutes</td><td>' + row.year + '</td><td>' + row.titleType + '</td></tr>');
-                            table.append(newRow);
-                        });
-                        $('.container').append(table);
-                    },
-                    error: function() {
-                        alert('Failed to calculate runtime.');
+                        alert('Failed to upload CSV file.');
                     }
                 });
             });
