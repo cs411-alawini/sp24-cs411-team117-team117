@@ -9,7 +9,7 @@ file_path = sys.argv[1]
 # Read the CSV file using pandas
 user_info_ = pd.read_csv(file_path, sep=',')
 
-user_info_['Season'] = user_info_['Title'].str.extract(r'(Season \d+)|(Part \d+)|(Book \d+)|(Volume \d+)|(Limited Series \d+)|(Chapter \d+)').sum(axis=1)
+user_info_['Season'] = user_info_['Title'].str.extract(r'(Season \d+)|(Part \d+)|(Book \d+)|(Volume \d+)|(Limited Series \d+)|(Chapter \d+)').fillna('').sum(axis=1)
 user_info_['Episode'] = user_info_['Title'].str.extract(r'(Episode \d+)')
 user_info_['Title'] = user_info_['Title'].str.strip()
 user_info_['id'] = range(1, len(user_info_) + 1)
@@ -47,15 +47,16 @@ try:
     # Insert data from the DataFrame into the temporary table
     with connection.cursor() as cursor:
         for index, row in user_info_.iterrows():
-            if(pd.isnull(row['Season'])):
-                print(row['id'])
+            if(pd.isnull(row['Title'])):
+                continue
+
             if not pd.isnull(row['Season']) and not pd.isnull(row['Episode']):
                 insert_query = "INSERT INTO user_info (Title, Date, Season, Episode, titleType, id) VALUES (%s, %s, %s, %s, %s, %s)"
                 cursor.execute(insert_query, (row['Title'], row['Date'], row['Season'], row['Episode'], row['titleType'], row['id']))
             elif pd.isnull(row['Season']) and not pd.isnull(row['Episode']):
                 insert_query = "INSERT INTO user_info (Title, Date, Episode, titleType, id) VALUES (%s, %s, %s, %s, %s)"
                 cursor.execute(insert_query, (row['Title'], row['Date'], row['Episode'], row['titleType'], row['id']))
-            elif not pd.isnull(row['Episode']) and pd.isnull(row['Season']):
+            elif pd.isnull(row['Episode']) and not pd.isnull(row['Season']):
                 insert_query = "INSERT INTO user_info (Title, Date, Season, titleType, id) VALUES (%s, %s, %s, %s, %s)"
                 cursor.execute(insert_query, (row['Title'], row['Date'], row['Season'], row['titleType'], row['id']))
             # else:
