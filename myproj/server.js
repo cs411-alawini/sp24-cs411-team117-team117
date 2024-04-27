@@ -3,8 +3,11 @@ var path = require('path');
 var mysql = require('mysql2');
 const { exec } = require('child_process');
 const fileUpload = require('express-fileupload');
+const bodyParser = require('body-parser');
 
-// MySQL connection setup
+var app = express();
+app.use(bodyParser.json());
+
 var connection = mysql.createConnection({
     host: '35.238.150.143',
     user: 'root',
@@ -20,24 +23,19 @@ connection.connect(function(err) {
     console.log('Connected to MySQL database');
 });
 
-var app = express();
-
-// Set up view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload());
 
-// Route to display the initial upload form
 app.get('/', function(req, res) {
     res.render('index');
 });
 
-// Route to handle file upload and processing
+app.get('/results', function(req, res) {
+    res.render('results');
+});
+
 app.post('/api/upload-csv', function(req, res) {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
@@ -53,7 +51,6 @@ app.post('/api/upload-csv', function(req, res) {
         }
 
         const pythonScript = `python3 your_python_script.py ${filePath}`;
-
         exec(pythonScript, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error executing Python script: ${error.message}`);
@@ -62,31 +59,48 @@ app.post('/api/upload-csv', function(req, res) {
             if (stderr) {
                 console.error(`Python script stderr: ${stderr}`);
             }
-            // Redirect to a new page after processing
             res.redirect('/results');
         });
     });
 });
 
-// Route to render the results page
-app.get('/results', function(req, res) {
-    res.render('results');
-});
-
-// Route to fetch user information
 app.get('/api/user-info', function(req, res) {
     var sql = 'SELECT * FROM user_info';
     connection.query(sql, function(err, results) {
         if (err) {
             console.error('Error fetching user info:', err);
-            res.status(500).send({ message: 'Error fetching user info', error: err });
-            return;
+            return res.status(500).send({ message: 'Error fetching user info', error: err });
         }
         res.json(results);
     });
 });
 
-// Route to calculate and return runtime data
+app.post('/api/user-info/update/:id', function(req, res) {
+    const userId = req.params.id;
+    const { Title, Date, Season, Episode, titleType } = req.body;
+
+    const sql = 'UPDATE user_info SET Title = ?, Date = ?, Season = ?, Episode = ?, titleType = ? WHERE id = ?';
+    connection.query(sql, [Title, Date, Season, Episode, titleType, userId], function(err, result) {
+        if (err) {
+            console.error('Error updating user info:', err);
+            return res.status(500).send({ message: 'Error updating user info', error: err });
+        }
+        res.send({ message: 'User info updated successfully' });
+    });
+});
+
+app.post('/api/user-info/delete/:id', function(req, res) {
+    const userId = req.params.id;
+    const sql = 'DELETE FROM user_info WHERE id = ?';
+    connection.query(sql, [userId], function(err, result) {
+        if (err) {
+            console.error('Error deleting user info:', err);
+            return res.status(500).send({ message: 'Error deleting user info', error: err });
+        }
+        res.send({ message: 'User info deleted successfully' });
+    });
+});
+
 app.get('/api/runtime/:year', function(req, res) {
     const selectedYear = req.params.year;
     calculateRuntime(res, selectedYear);
@@ -112,13 +126,13 @@ function calculateRuntime(response, year) {
         if (err) {
             console.error('Error fetching total runtime data:', err);
             response.status(500).send({ message: 'Error fetching total runtime data', error: err });
-            return;
+        } else {
+            response.json(results);
         }
-        response.json(results);
     });
 }
 
-// Start the server
+
 app.listen(80, function () {
     console.log('Node app is running on port 80');
 });
