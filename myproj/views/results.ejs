@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta "viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Wrapped - Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #e50914;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .title {
+            font-size: 24px;
+        }
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            background-color: #e50914;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #b20710;
+        }
+        .data-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            display: none; /* Initially hidden until data is loaded */
+            overflow-y: auto; /* Make scrollable */
+            max-height: 300px; /* Fixed height for scrolling */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">NETFLIX WRAPPED - Results</div>
+    </div>
+    <div class="container">
+        <button id="userInfoBtn">Print User Info</button>
+        <button id="runtimeBtn">Print Runtime</button>
+        <div id="userInfo" class="data-container"></div>
+        <div id="runtimeData" class="data-container"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#userInfoBtn').click(function() {
+                $('#userInfo').toggle(); // Toggle visibility
+                if ($('#userInfo').is(':visible')) {
+                    $.ajax({
+                        url: '/api/user-info',
+                        method: 'GET',
+                        success: function(data) {
+                            let content = '<h3>User Info:</h3><table><tr><th>ID</th><th>Title</th><th>Date</th><th>Season</th><th>Episode</th><th>Title Type</th></tr>';
+                            data.forEach(function(item) {
+                                content += `<tr><td>${item.id}</td><td>${item.Title}</td><td>${item.Date}</td><td>${item.Season}</td><td>${item.Episode}</td><td>${item.titleType}</td></tr>`;
+                            });
+                            content += '</table>';
+                            $('#userInfo').html(content);
+                        }
+                    });
+                }
+            });
+
+            $('#runtimeBtn').click(function() {
+                $('#runtimeData').toggle(); // Toggle visibility
+                if ($('#runtimeData').is(':visible')) {
+                    $.ajax({
+                        url: '/api/runtime',
+                        method: 'GET',
+                        success: function(data) {
+                            let content = '<h3>Runtime Data:</h3><table><tr><th>Year</th><th>Type</th><th>Total Time (min)</th></tr>';
+                            data.forEach(function(item) {
+                                content += `<tr><td>${item.year}</td><td>${item.titleType}</td><td>${item.totaltime}</td></tr>`;
+                            });
+                            content += '</table>';
+                            $('#runtimeData').html(content);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 var express = require('express');
 var path = require('path');
 var mysql = require('mysql2');
@@ -33,11 +32,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload());
 
-// Routes
+// Route to display the initial upload form
 app.get('/', function(req, res) {
     res.render('index');
 });
 
+// Route to handle file upload and processing
 app.post('/api/upload-csv', function(req, res) {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
@@ -62,12 +62,18 @@ app.post('/api/upload-csv', function(req, res) {
             if (stderr) {
                 console.error(`Python script stderr: ${stderr}`);
             }
-            
-            calculateRuntime(res);
+            // Redirect to a new page after processing
+            res.redirect('/results');
         });
     });
 });
 
+// Route to render the results page
+app.get('/results', function(req, res) {
+    res.render('results');
+});
+
+// Route to fetch user information
 app.get('/api/user-info', function(req, res) {
     var sql = 'SELECT * FROM user_info';
     connection.query(sql, function(err, results) {
@@ -80,6 +86,10 @@ app.get('/api/user-info', function(req, res) {
     });
 });
 
+// Route to calculate and return runtime data
+app.get('/api/runtime', function(req, res) {
+    calculateRuntime(res);
+});
 
 function calculateRuntime(response) {
     var sql = `
@@ -109,5 +119,5 @@ function calculateRuntime(response) {
 
 // Start the server
 app.listen(80, function () {
-  console.log('Node app is running on port 80');
+    console.log('Node app is running on port 80');
 });
