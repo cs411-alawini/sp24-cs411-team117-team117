@@ -87,22 +87,23 @@ app.get('/api/user-info', function(req, res) {
 });
 
 // Route to calculate and return runtime data
-app.get('/api/runtime', function(req, res) {
-    calculateRuntime(res);
+app.get('/api/runtime/:year', function(req, res) {
+    const selectedYear = req.params.year;
+    calculateRuntime(res, selectedYear);
 });
 
-function calculateRuntime(response) {
+function calculateRuntime(response, year) {
     var sql = `
-        SELECT SUM(t.runtimeMinutes) as totaltime, SUBSTRING(u.Date, -2) as year, t.titleType
+        SELECT SUM(t.runtimeMinutes) as totaltime, '${year}' as year, t.titleType
         FROM user_info u
         JOIN title t ON u.Title = t.primaryTitle AND u.titleType = t.titleType
-        WHERE t.titleType = 'movie'
+        WHERE t.titleType = 'movie' AND SUBSTRING(u.Date, -2) = '${year}'
         GROUP BY year, t.titleType
         UNION
-        SELECT SUM(t.runtimeMinutes) as totaltime, SUBSTRING(u.Date, -2) as year, t.titleType
+        SELECT SUM(t.runtimeMinutes) as totaltime, '${year}' as year, t.titleType
         FROM user_info u
         JOIN title t ON u.Title = t.primaryTitle
-        WHERE t.runtimeMinutes < 70 AND t.runtimeMinutes > 19 AND t.titleType != 'movie'
+        WHERE t.runtimeMinutes < 70 AND t.runtimeMinutes > 19 AND t.titleType != 'movie' AND SUBSTRING(u.Date, -2) = '${year}'
         GROUP BY year, t.titleType
         ORDER BY year DESC;
     `;
