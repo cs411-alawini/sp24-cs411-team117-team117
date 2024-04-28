@@ -112,3 +112,37 @@ input[type="file"] {
     background-color: #b20710; /* Darker red on hover */
 }
 
+ .button {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+
+        .red {
+            background-color: #E50914;
+        }
+
+        .red:hover {
+            background-color: #FF0F1E;
+        }
+
+        .data-container {
+            width: 100%;
+            float: left;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            width: 50%;
+            float: left;
+            margin-right: 20px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }

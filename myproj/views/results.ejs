@@ -6,39 +6,6 @@
     <title>Netflix Wrapped - Results</title>
     <link rel="stylesheet" type="text/css" href="/css/styles.css">
     <style>
-        /* Additional CSS for button styling */
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            color: white;
-        }
-
-        .red {
-            background-color: #E50914;
-        }
-
-        .red:hover {
-            background-color: #FF0F1E;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
     </style>
 </head>
 <body>
@@ -47,20 +14,26 @@
     </div>
     <div class="container">
         <div id="userInfo" class="data-container"></div>
-        <select id="yearSelect">
-            <option value="">Select Year</option>
-            <option value="19">2019</option>
-            <option value="20">2020</option>
-            <option value="21">2021</option>
-            <option value="22">2022</option>
-            <option value="23">2023</option>
-            <option value="24">2024</option>
-        </select>
-        <button id="runtimeBtn" class="button red">Get Runtime</button>
-        <div id="runtimeData" class="data-container"></div>
+        <div class="data-container">
+            <select id="yearSelect">
+                <option value="">Select Year</option>
+                <option value="19">2019</option>
+                <option value="20">2020</option>
+                <option value="21">2021</option>
+                <option value="22">2022</option>
+                <option value="23">2023</option>
+                <option value="24">2024</option>
+            </select>
+            <button id="runtimeBtn" class="button red">Get Runtime</button>
+            <div id="runtimeData"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="runtimeChart"></canvas>
+        </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         $(document).ready(function() {
             // Load user info automatically
@@ -86,10 +59,58 @@
                         success: function(data) {
                             let content = '<h3>Runtime Data:</h3><table><tr><th>Year</th><th>Type</th><th>Total Time (min)</th></tr>';
                             data.forEach(function(item) {
-                                content += `<tr><td>${item.year}</td><td>${item.titleType}</td><td>${item.totaltime}</td></tr>`;
+                                content += `<tr><td>${item.year}</td><td>Type</td><td>${item.totaltime}</td></tr>`;
                             });
                             content += '</table>';
                             $('#runtimeData').html(content);
+                            
+                            // Prepare data for the chart
+                            var types = data.map(item => item.titleType);
+                            var totalTimes = data.map(item => item.totaltime);
+                            
+                            // Create the chart
+                            var ctx = document.getElementById('runtimeChart').getContext('2d');
+                            var myChart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: types,
+                                    datasets: [{
+                                        label: 'Total Time (min)',
+                                        data: totalTimes,
+                                        backgroundColor: [
+                                            'rgba(255, 99, 132, 0.5)',
+                                            'rgba(54, 162, 235, 0.5)',
+                                            'rgba(255, 206, 86, 0.5)',
+                                            'rgba(75, 192, 192, 0.5)',
+                                            'rgba(153, 102, 255, 0.5)',
+                                            'rgba(255, 159, 64, 0.5)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(255, 99, 132, 1)',
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 206, 86, 1)',
+                                            'rgba(75, 192, 192, 1)',
+                                            'rgba(153, 102, 255, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Runtime by Type'
+                                        },
+                                        legend: {
+                                            display: true,
+                                            position: 'right'
+                                        }
+                                    }
+                                }
+                            });
                         },
                         error: function() {
                             $('#runtimeData').html('<p>No data found for selected year.</p>');
