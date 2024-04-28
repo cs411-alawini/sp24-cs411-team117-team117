@@ -4,82 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Wrapped</title>
-    <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #000; /* Full black background */
-            color: white;
-            text-align: center;
-        }
-        .header {
-            background-color: #000; /* Netflix red */
-            padding: 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            display: #e50914; /* Inline display for header elements */
-        }
-        .header .netflix {
-            color: #e50914; /* Netflix red */
-        }
-        .header .wrapped {
-            color: white; /* Wrapped text in white */
-        }
-        .upload-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: calc(100% - 40px); /* Adjust height accounting for header */
-        }
-        .upload-instructions {
-            font-size: 1.5em; /* Larger text for instructions */
-            margin-bottom: 30px; /* Space above upload box */
-            line-height: 1.8; /* Increased line height for better readability */
-        }
-        .upload-box {
-            border: 3px dashed #e50914; /* Netflix red */
-            padding: 40px; /* Increased padding for a larger box */
-            margin: 20px;
-            display: inline-block;
-            cursor: pointer;
-            font-size: 1.5em; /* Larger text inside the box */
-        }
-        .upload-btn {
-            background-color: #e50914;
-            color: white;
-            border: none;
-            padding: 15px 30px; /* Larger button */
-            margin-top: 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 18px;
-            outline: none;
-        }
-        .upload-btn:hover {
-            background-color: #b20710;
-        }
-        input[type="file"] {
-            display: none; /* Hide the default file input */
-        }
-        .loading-overlay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            color: #fff;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            font-size: 2em;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
 </head>
 <body>
     <div class="header">
@@ -93,7 +18,7 @@
             Click on Account.<br>
             Scroll down and click on Manage Profiles.<br>
             Click on the profile you want to analyze.<br>
-            Go to "Viewing activity".<br>
+            Go to "Viewing activity".
             Scroll down and click "Download all" at the bottom, then upload the file here.
         </div>
         <div class="upload-box" onclick="document.getElementById('file-upload').click()">

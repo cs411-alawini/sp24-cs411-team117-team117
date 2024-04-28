@@ -4,79 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Wrapped - Results</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            background-color: #e50914;
-            color: #fff;
+        /* Additional CSS for button styling */
+        .button {
+            display: inline-block;
             padding: 10px 20px;
-            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
         }
-        .title {
-            font-size: 24px;
+
+        .red {
+            background-color: #E50914;
         }
-        .container {
-            padding: 20px;
-            text-align: center;
+
+        .red:hover {
+            background-color: #FF0F1E;
         }
-        .data-container {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            overflow-y: auto;
-            max-height: 300px;
-        }
+
         table {
-            width: 100%;
             border-collapse: collapse;
+            width: 100%;
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
-            background-color: #007bff;
-            color: white;
-        }
-        select, button, input[type="text"] {
-            padding: 8px;
-            margin: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background-color: #e50914;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #b20710;
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="title">NETFLIX WRAPPED - Results</div>
+        <h1><span class="netflix">Netflix</span> <span class="wrapped">Wrapped</span></h1>
     </div>
     <div class="container">
         <div id="userInfo" class="data-container"></div>
         <select id="yearSelect">
             <option value="">Select Year</option>
-            <option value="2019">2019</option>
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
+            <option value="19">2019</option>
+            <option value="20">2020</option>
+            <option value="21">2021</option>
+            <option value="22">2022</option>
+            <option value="23">2023</option>
+            <option value="24">2024</option>
         </select>
-        <button id="runtimeBtn">Get Runtime</button>
+        <button id="runtimeBtn" class="button red">Get Runtime</button>
         <div id="runtimeData" class="data-container"></div>
     </div>
 
@@ -90,7 +70,7 @@
                 success: function(data) {
                     let content = '<h3>User Info:</h3><table><tr><th>ID</th><th>Title</th><th>Date</th><th>Season</th><th>Episode</th><th>Title Type</th><th>Actions</th></tr>';
                     data.forEach(function(item) {
-                        content += `<tr id="user_${item.id}"><td>${item.id}</td><td class='title-cell'>${item.Title}</td><td class='date-cell'>${item.Date}</td><td class='season-cell'>${item.Season}</td><td class='episode-cell'>${item.Episode}</td><td class='titleType-cell'>${item.titleType}</td><td><button onclick="modifyUser(${item.id})">Modify</button> <button onclick="deleteUser(${item.id})">Delete</button></td></tr>`;
+                        content += `<tr id="user_${item.id}"><td>${item.id}</td><td class='title-cell'>${item.Title}</td><td class='date-cell'>${item.Date}</td><td class='season-cell'>${item.Season}</td><td class='episode-cell'>${item.Episode}</td><td class='titleType-cell'>${item.titleType}</td><td><button class="button red" onclick="modifyUser(${item.id})">Modify</button> <button class="button red" onclick="deleteUser(${item.id})">Delete</button></td></tr>`;
                     });
                     content += '</table>';
                     $('#userInfo').html(content);

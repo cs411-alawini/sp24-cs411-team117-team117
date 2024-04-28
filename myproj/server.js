@@ -1,14 +1,14 @@
-var express = require('express');
-var path = require('path');
-var mysql = require('mysql2');
+const express = require('express');
+const path = require('path');
+const mysql = require('mysql2');
 const { exec } = require('child_process');
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
 
-var app = express();
+const app = express();
 app.use(bodyParser.json());
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
     host: '35.238.150.143',
     user: 'root',
     password: 'team117',
@@ -25,7 +25,11 @@ connection.connect(function(err) {
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'views')));
+app.use('/css', express.static(path.join(__dirname, 'views/css')));
+
 app.use(fileUpload());
 
 app.get('/', function(req, res) {
@@ -131,7 +135,6 @@ function calculateRuntime(response, year) {
         }
     });
 }
-
 
 app.listen(80, function () {
     console.log('Node app is running on port 80');
