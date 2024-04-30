@@ -94,10 +94,10 @@ app.post('/api/display/add', function(req, res) {
 
 app.post('/api/display/update/:id', function(req, res) {
     const displayId = req.params.id;
-    const { tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType } = req.body;
+    const { primaryTitle, runtimeMinutes, Season, Date, titleType } = req.body;
 
-    const sql = 'UPDATE display SET tconst = ?, primaryTitle = ?, runtimeMinutes = ?, Season = ?, Episode = ?, Date = ?, titleType = ? WHERE id = ?';
-    connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, displayId], function(err, result) {
+    const sql = 'UPDATE display SET primaryTitle = ?, runtimeMinutes = ?, Season = ?, Date = ?, titleType = ? WHERE id = ?';
+    connection.query(sql, [primaryTitle, runtimeMinutes, Season, Date, titleType, displayId], function(err, result) {
         if (err) {
             console.error('Error updating display:', err);
             return res.status(500).send({ message: 'Error updating display', error: err });
@@ -166,6 +166,18 @@ app.get('/api/create/:year', function(req, res) {
     });
 });
 
+// Route to handle search and filter display items
+app.post('/api/display/search', function(req, res) {
+    const searchText = req.body.searchText;
+    const sql = `SELECT * FROM display WHERE primaryTitle LIKE '%${searchText}%'`;
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching filtered display info:', err);
+            return res.status(500).send({ message: 'Error fetching filtered display info', error: err });
+        }
+        res.json(results);
+    });
+});
 
 app.listen(80, function () {
     console.log('Node app is running on port 80');
