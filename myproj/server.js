@@ -82,7 +82,7 @@ app.get('/api/display', function(req, res) {
 app.post('/api/display/add', function(req, res) {
     const { tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id } = req.body;
 
-    const sql = 'INSERT INTO display (tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO display (id, tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id], function(err, result) {
         if (err) {
             console.error('Error adding to display:', err);
@@ -91,6 +91,7 @@ app.post('/api/display/add', function(req, res) {
         res.send({ message: 'Data added to display successfully' });
     });
 });
+
 
 app.post('/api/display/update/:id', function(req, res) {
     const displayId = req.params.id;
