@@ -153,6 +153,81 @@ function calculateRuntime(response) {
     });
 }
 
+app.get('/api/binged_tv', function(req, res) {
+    calculateBingedTV(res);
+});
+
+function calculateBingedTV(response) {
+    var sql = `
+    SELECT d.primarytitle, sum(d.runtimeMinutes) as totaltime, (sum(d.runtimeMinutes)/(d.runtimeMinutes)) as number_of_eps
+    FROM display d
+    WHERE d.titleType != 'movie'
+    GROUP BY d.primarytitle,  d.runtimeMinutes
+    ORDER BY totaltime DESC
+    LIMIT 15;
+    `;
+
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching binged TV data:', err);
+            response.status(500).send({ message: 'Error fetching binged TV data', error: err });
+        } else {
+            response.json(results);
+        }
+    });
+}
+
+app.get('/api/genre', function(req, res) {
+    calculategenre(res);
+});
+
+function calculategenre(response) {
+    var sql = `
+    SELECT generes, COUNT(*) AS GenreCount
+    FROM display d
+    JOIN title_to_genres tg on tg.tconst = d.tconst
+    JOIN genres g ON tg.id = g.id
+    GROUP BY generes
+    ORDER BY GenreCount DESC;
+    `;
+
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching genre data:', err);
+            response.status(500).send({ message: 'Error fetching genre data', error: err });
+        } else {
+            response.json(results);
+        }
+    });
+}
+
+
+app.get('/api/director', function(req, res) {
+    calculatedirector(res);
+});
+
+function calculatedirector(response) {
+    var sql = `
+    SELECT c.primaryName, COUNT(*) AS WatchCount
+    FROM display d
+    JOIN title_to_crew tg on tg.titleconst = d.tconst
+    JOIN crew c ON tg.directors = c.nconst
+    GROUP BY c.nconst
+    ORDER BY WatchCount DESC
+    LIMIT 15;
+    `;
+
+    connection.query(sql, function(err, results) {
+        if (err) {
+            console.error('Error fetching director data:', err);
+            response.status(500).send({ message: 'Error fetching director data', error: err });
+        } else {
+            response.json(results);
+        }
+    });
+}
+
+
 
 // New API endpoint
 app.get('/api/create/:year', function(req, res) {

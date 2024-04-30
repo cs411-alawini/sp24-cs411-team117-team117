@@ -10,12 +10,27 @@
     <div class="header">
         <h1><span class="netflix">Netflix</span> <span class="wrapped">Wrapped</span></h1>
     </div>
+
     <div class="container">
-        <div id="runtimeData" class="data-container"></div>
         <div class="chart-container">
             <canvas id="runtimeChart"></canvas>
         </div>
+        <div class="data-container" style="margin-top: 20px;">
+            <div id="runtimeData"></div>
+        </div>
+        <div class="data-container" style="margin-top: 20px;">
+            <div id="bingedTvData"></div>
+        </div>
+        <div class="data-container" style="margin-top: 20px;">
+            <div id="genreData"></div>
+        </div>
+        <div class="data-container" style="margin-top: 20px;">
+            <div id="directorData"></div>
+        </div> 
     </div>
+    
+    </div>
+    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -84,7 +99,57 @@
                     $('#runtimeData').html('<p>No data found for runtime.</p>');
                 }
             });
+            $.ajax({
+                    url: '/api/binged_tv',
+                    method: 'GET',
+                    success: function(data) {
+                        let content = '<h2>You loved watching ' + data[0].primarytitle + '</h2>'; // First entry of the query result
+                        content += '<table class="data-table"><tr><th>Title</th><th>Total Time (min)</th><th>Number of Episodes</th></tr>';
+                        data.forEach(function(item) {
+                            content += `<tr><td>${item.primarytitle}</td><td>${item.totaltime}</td><td>${item.number_of_eps}</td></tr>`;
+                        });
+                        content += '</table>';
+                        $('#bingedTvData').html(content);
+                    },
+                    error: function() {
+                        $('#bingedTvData').html('<p>No data found for binged TV shows.</p>');
+                    }
+                });
+            $.ajax({
+                    url: '/api/genre',
+                    method: 'GET',
+                    success: function(data) {
+                        let content = '<h2>Most Watched Genres</h2>';
+                        content += '<table class="data-table"><tr><th>Genre</th><th>Count</th></tr>';
+                        data.forEach(function(item) {
+                            content += `<tr><td>${item.generes}</td><td>${item.GenreCount}</td></tr>`;
+                        });
+                        content += '</table>';
+                        $('#genreData').html(content);
+                    },
+                    error: function() {
+                        $('#genreData').html('<p>No data found for genres.</p>');
+                    }
+            });
+            $.ajax({
+                url: '/api/director',
+                method: 'GET',
+                success: function(data) {
+                    let content = '<h2>Most Enjoyed Directors</h2>';
+                    content += '<table class="data-table"><tr><th>Director</th><th>Number of Times Watched</th></tr>';
+                    data.forEach(function(item) {
+                        content += `<tr><td>${item.primaryName}</td><td>${item.WatchCount}</td></tr>`;
+                    });
+                    content += '</table>';
+                    $('#directorData').html(content);
+                },
+                error: function() {
+                    $('#directorData').html('<p>No data found for directors.</p>');
+                }
+            });
+
         });
+        
     </script>
 </body>
 </html>
