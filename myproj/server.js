@@ -68,62 +68,73 @@ app.post('/api/upload-csv', function(req, res) {
     });
 });
 
-app.get('/api/user-info', function(req, res) {
-    var sql = 'SELECT * FROM user_info';
+app.get('/api/display', function(req, res) {
+    var sql = 'SELECT * FROM display';
     connection.query(sql, function(err, results) {
         if (err) {
-            console.error('Error fetching user info:', err);
-            return res.status(500).send({ message: 'Error fetching user info', error: err });
+            console.error('Error fetching display info:', err);
+            return res.status(500).send({ message: 'Error fetching display info', error: err });
         }
         res.json(results);
     });
 });
 
-app.post('/api/user-info/update/:id', function(req, res) {
-    const userId = req.params.id;
-    const { Title, Date, Season, Episode, titleType } = req.body;
+app.post('/api/display/add', function(req, res) {
+    const { tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id } = req.body;
 
-    const sql = 'UPDATE user_info SET Title = ?, Date = ?, Season = ?, Episode = ?, titleType = ? WHERE id = ?';
-    connection.query(sql, [Title, Date, Season, Episode, titleType, userId], function(err, result) {
+    const sql = 'INSERT INTO display (tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id], function(err, result) {
         if (err) {
-            console.error('Error updating user info:', err);
-            return res.status(500).send({ message: 'Error updating user info', error: err });
+            console.error('Error adding to display:', err);
+            return res.status(500).send({ message: 'Error adding to display', error: err });
         }
-        res.send({ message: 'User info updated successfully' });
+        res.send({ message: 'Data added to display successfully' });
     });
 });
 
-app.post('/api/user-info/delete/:id', function(req, res) {
-    const userId = req.params.id;
-    const sql = 'DELETE FROM user_info WHERE id = ?';
-    connection.query(sql, [userId], function(err, result) {
+app.post('/api/display/update/:id', function(req, res) {
+    const displayId = req.params.id;
+    const { tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType } = req.body;
+
+    const sql = 'UPDATE display SET tconst = ?, primaryTitle = ?, runtimeMinutes = ?, Season = ?, Episode = ?, Date = ?, titleType = ? WHERE id = ?';
+    connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, displayId], function(err, result) {
         if (err) {
-            console.error('Error deleting user info:', err);
-            return res.status(500).send({ message: 'Error deleting user info', error: err });
+            console.error('Error updating display:', err);
+            return res.status(500).send({ message: 'Error updating display', error: err });
         }
-        res.send({ message: 'User info deleted successfully' });
+        res.send({ message: 'Display info updated successfully' });
     });
 });
 
-app.get('/api/runtime/:year', function(req, res) {
-    const selectedYear = req.params.year;
-    calculateRuntime(res, selectedYear);
+app.post('/api/display/delete/:id', function(req, res) {
+    const displayId = req.params.id;
+    const sql = 'DELETE FROM display WHERE id = ?';
+    connection.query(sql, [displayId], function(err, result) {
+        if (err) {
+            console.error('Error deleting display info:', err);
+            return res.status(500).send({ message: 'Error deleting display info', error: err });
+        }
+        res.send({ message: 'Display info deleted successfully' });
+    });
 });
 
-function calculateRuntime(response, year) {
+
+app.get('/api/runtime', function(req, res) {
+    calculateRuntime(res);
+});
+
+function calculateRuntime(response) {
     var sql = `
-        SELECT SUM(t.runtimeMinutes) as totaltime, '${year}' as year, t.titleType
-        FROM user_info u
-        JOIN title t ON u.Title = t.primaryTitle AND u.titleType = t.titleType
-        WHERE t.titleType = 'movie' AND SUBSTRING(u.Date, -2) = '${year}'
-        GROUP BY year, t.titleType
+        SELECT CONCAT('20', SUBSTRING(d.Date, -2)) as year, SUM(d.runtimeMinutes) as totaltime, d.titleType
+        FROM display d
+        WHERE d.titleType = 'movie'
+        GROUP t.titleType
         UNION
-        SELECT SUM(t.runtimeMinutes) as totaltime, '${year}' as year, t.titleType
-        FROM user_info u
-        JOIN title t ON u.Title = t.primaryTitle
-        WHERE t.runtimeMinutes < 70 AND t.runtimeMinutes > 19 AND t.titleType != 'movie' AND SUBSTRING(u.Date, -2) = '${year}'
-        GROUP BY year, t.titleType
-        ORDER BY year DESC;
+        SELECT CONCAT('20', SUBSTRING(d.Date, -2)) as year, SUM(d.runtimeMinutes) as totaltime, d.titleType
+        FROM display d
+        WHERE d.titleType != 'movie'
+        GROUP d.titleType
+        ORDER BY d.titleType DESC;
     `;
 
     connection.query(sql, function(err, results) {
@@ -135,6 +146,25 @@ function calculateRuntime(response, year) {
         }
     });
 }
+
+
+// New API endpoint
+app.get('/api/create/:year', function(req, res) {
+    const selectedYear = req.params.year;
+
+    // Sample SQL query
+    const query = `CALL analysis_create('${selectedYear}')`;
+
+    // Execute the query
+    connection.query(query, function(err, results) {
+        if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).send({ message: 'Error executing query', error: err });
+        }
+        res.json(results);
+    });
+});
+
 
 app.listen(80, function () {
     console.log('Node app is running on port 80');

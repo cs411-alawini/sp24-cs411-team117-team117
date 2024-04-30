@@ -134,3 +134,34 @@ canvas {
     height: 150%;
     /* Add any other styling specific to the runtime data table */
 }
+/* Dropdown styling */
+.dropdown-container {
+    margin-top: 20px;
+    position: relative;
+    width: 200px; /* Adjust width as needed */
+}
+
+.dropdown {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    padding: 8px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    background-color: #e50914; /* Netflix red */
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+}
+
+/* Dropdown arrow */
+.dropdown::after {
+    content: '\25BC';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
