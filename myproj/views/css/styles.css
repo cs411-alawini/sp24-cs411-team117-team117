@@ -31,7 +31,10 @@ body, html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    width: 100%; /* Adjust the width as needed */
+    height: 400px; /* Set the height to your desired fixed size */
+    margin: auto; /* Center the container horizontally */
+    padding: 5px; /* Add some padding for spacing */
 }
 
 .upload-container {
@@ -93,13 +96,15 @@ input[type="file"] {
 }
 
 .data-container {
-    margin-top: 20px;
-    padding: 20px;
+ margin-top: 2px;
+    padding: 2px;
     border: 1px solid #ccc;
     background-color: #000; /* Black background */
     overflow-y: auto; /* Make it scrollable */
     max-height: 300px;
-    width: 80%; /* Wider width for the runtime box */
+    width: 90%; /* Wider width for the data container */
+    height: 400px; /* Adjusted height for the data container */
+    text-align: center; /* Center-align contents */
 }
 
 .button {
