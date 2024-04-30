@@ -22,13 +22,19 @@
     <div class="container">
         <div id="displayInfo" class="data-container"></div>
     </div>
-        
+    
+    <button id="analysisButton" class="button">Go to Analysis</button>
+
     <!-- Modal for Add -->
     <div id="myModal" class="modal"></div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
+
+            $('#analysisButton').click(function() {
+                window.location.href = '/analysis'; // Redirect to the analysis page
+            });
             // Function to load display info
             function loadDisplayInfo() {
                 $.ajax({

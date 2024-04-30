@@ -40,6 +40,10 @@ app.get('/results', function(req, res) {
     res.render('results');
 });
 
+app.get('/analysis', function(req, res) {
+    res.render('analysis'); // Render the analysis.ejs template
+});
+
 app.post('/api/upload-csv', function(req, res) {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');

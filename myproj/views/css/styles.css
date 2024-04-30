@@ -34,45 +34,62 @@ body, html {
     height: 100%;
 }
 
-.search-and-add {
+.upload-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 2%; /* Increased space above */
-    margin-bottom: 1%; /* Decreased space below */
+    height: calc(100% - 40px); /* Adjust height accounting for header */
 }
 
-.search-box {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
+.upload-instructions {
+    font-size: 1.5em; /* Larger text for instructions */
+    margin-bottom: 30px; /* Space above upload box */
+    line-height: 1.8; /* Increased line height for better readability */
 }
 
-.search-box input[type="text"] {
-    flex-grow: 1;
-    padding: 8px;
-    margin-right: 10px; /* Space between search input and buttons */
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-.button {
-    padding: 8px;
-    margin-left: 5px; /* Space between buttons */
-    border-radius: 4px;
+.upload-box {
+    border: 3px dashed #e50914; /* Netflix red */
+    padding: 40px; /* Increased padding for a larger box */
+    margin: 20px;
+    display: inline-block;
     cursor: pointer;
+    font-size: 1.5em; /* Larger text inside the box */
+}
+
+.upload-btn {
+    background-color: #e50914;
     color: white;
     border: none;
-    background-color: #e50914;
+    padding: 15px 30px; /* Larger button */
+    margin-top: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    outline: none;
 }
 
-.button:hover {
+.upload-btn:hover {
     background-color: #b20710;
 }
 
-.button.add-button {
-    padding: 4px 8px; /* Smaller padding */
-    font-size: 90%; /* Smaller font size */
+input[type="file"] {
+    display: none; /* Hide the default file input */
+}
+
+.loading-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    font-size: 2em;
 }
 
 .data-container {
@@ -82,7 +99,77 @@ body, html {
     background-color: #000; /* Black background */
     overflow-y: auto; /* Make it scrollable */
     max-height: 300px;
-    width: 80%; /* Wider width for the data container */
+    width: 80%; /* Wider width for the runtime box */
+}
+
+.button {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.button.red {
+    background-color: #e50914; /* Red color */
+}
+
+.button.red:hover {
+    background-color: #b20710; /* Darker red on hover */
+}
+
+.chart-container {
+    width: 28%; /* Adjusted width */
+    float: left;
+    margin-right: 20px;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+    max-width: 600px; /* 60% of the original width */
+}
+
+.runtime-table .data-table {
+    width: 40%;
+    height: 160%;
+    /* Add any other styling specific to the runtime data table */
+}
+
+/* Dropdown styling */
+.dropdown-container {
+    margin-top: 20px;
+    position: relative;
+    width: 200px; /* Adjust width as needed */
+}
+
+.dropdown {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    padding: 8px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    background-color: #e50914; /* Netflix red */
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+}
+
+/* Dropdown arrow */
+.dropdown::after {
+    content: '\25BC';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.runtime-heading {
+    font-size: 20px; /* Adjust the font size as needed */
 }
 
 .data-table {
@@ -91,7 +178,9 @@ body, html {
     margin-bottom: 20px;
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
+    border: 0px solid white;
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ccc; /* Add a border line below each cell */
@@ -104,4 +193,30 @@ body, html {
 
 .data-table tr:nth-child(even) {
     background-color: #0000;
+}
+
+.button {
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    border: none;
+    background-color: #e50914;
+}
+
+.button:hover {
+    background-color: #b20710;
+}
+
+.search-box {
+    margin-bottom: 20px;
+    width: 80%; /* Make the search box wider */
+}
+
+.search-box input[type="text"] {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }
