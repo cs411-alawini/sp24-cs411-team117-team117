@@ -125,16 +125,17 @@ app.get('/api/runtime', function(req, res) {
 
 function calculateRuntime(response) {
     var sql = `
-        SELECT CONCAT('20', SUBSTRING(d.Date, -2)) as year, SUM(d.runtimeMinutes) as totaltime, d.titleType
-        FROM display d
-        WHERE d.titleType = 'movie'
-        GROUP t.titleType
-        UNION
-        SELECT CONCAT('20', SUBSTRING(d.Date, -2)) as year, SUM(d.runtimeMinutes) as totaltime, d.titleType
-        FROM display d
-        WHERE d.titleType != 'movie'
-        GROUP d.titleType
-        ORDER BY d.titleType DESC;
+    SELECT CONCAT('20', SUBSTRING(d.Date, -2)) as year, SUM(d.runtimeMinutes) as totaltime, d.titleType
+    FROM display d
+    WHERE d.titleType = 'movie'
+    GROUP BY year, d.titleType
+    UNION
+    SELECT CONCAT('20', SUBSTRING(d.Date, -2)) as year, SUM(d.runtimeMinutes) as totaltime, d.titleType
+    FROM display d
+    WHERE d.titleType != 'movie'
+    GROUP BY year, d.titleType
+    ORDER BY year DESC;
+    
     `;
 
     connection.query(sql, function(err, results) {
