@@ -215,6 +215,7 @@ canvas {
 }
 
 .search-box {
+    margin: 0 auto; /* Center the search box horizontally */
     margin-bottom: 20px;
     width: 80%; /* Make the search box wider */
 }
