@@ -83,43 +83,130 @@ app.get('/api/display', function(req, res) {
     });
 });
 
+// Endpoint to add a new display item with transaction
 app.post('/api/display/add', function(req, res) {
     const { tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id } = req.body;
 
-    const sql = 'INSERT INTO display (id, tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id], function(err, result) {
+    // Begin a transaction
+    const startTransactionQuery = `START TRANSACTION`;
+    connection.query(startTransactionQuery, function(err) {
         if (err) {
-            console.error('Error adding to display:', err);
-            return res.status(500).send({ message: 'Error adding to display', error: err });
+            console.error('Error beginning transaction:', err);
+            return res.status(500).send({ message: 'Error beginning transaction', error: err });
         }
-        res.send({ message: 'Data added to display successfully' });
+
+        const sql = 'INSERT INTO display (id, tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id], function(err, result) {
+            if (err) {
+                console.error('Error adding to display:', err);
+
+                // Rollback the transaction if there's an error
+                const rollbackQuery = `ROLLBACK`;
+                connection.query(rollbackQuery, function(rollbackErr) {
+                    if (rollbackErr) {
+                        console.error('Error rolling back transaction:', rollbackErr);
+                    }
+                    console.error('Transaction rolled back.');
+                    return res.status(500).send({ message: 'Error adding to display', error: err });
+                });
+            }
+
+            // Commit the transaction if the query is successful
+            const commitQuery = `COMMIT`;
+            connection.query(commitQuery, function(commitErr) {
+                if (commitErr) {
+                    console.error('Error committing transaction:', commitErr);
+                    return res.status(500).send({ message: 'Error committing transaction', error: commitErr });
+                }
+                console.log('Transaction committed successfully.');
+                res.send({ message: 'Data added to display successfully' });
+            });
+        });
     });
 });
 
-
+// Endpoint to update a display item with transaction
 app.post('/api/display/update/:id', function(req, res) {
     const displayId = req.params.id;
     const { primaryTitle, runtimeMinutes, Season, Date, titleType } = req.body;
 
-    const sql = 'UPDATE display SET primaryTitle = ?, runtimeMinutes = ?, Season = ?, Date = ?, titleType = ? WHERE id = ?';
-    connection.query(sql, [primaryTitle, runtimeMinutes, Season, Date, titleType, displayId], function(err, result) {
+    // Begin a transaction
+    const startTransactionQuery = `START TRANSACTION`;
+    connection.query(startTransactionQuery, function(err) {
         if (err) {
-            console.error('Error updating display:', err);
-            return res.status(500).send({ message: 'Error updating display', error: err });
+            console.error('Error beginning transaction:', err);
+            return res.status(500).send({ message: 'Error beginning transaction', error: err });
         }
-        res.send({ message: 'Display info updated successfully' });
+
+        const sql = 'UPDATE display SET primaryTitle = ?, runtimeMinutes = ?, Season = ?, Date = ?, titleType = ? WHERE id = ?';
+        connection.query(sql, [primaryTitle, runtimeMinutes, Season, Date, titleType, displayId], function(err, result) {
+            if (err) {
+                console.error('Error updating display:', err);
+
+                // Rollback the transaction if there's an error
+                const rollbackQuery = `ROLLBACK`;
+                connection.query(rollbackQuery, function(rollbackErr) {
+                    if (rollbackErr) {
+                        console.error('Error rolling back transaction:', rollbackErr);
+                    }
+                    console.error('Transaction rolled back.');
+                    return res.status(500).send({ message: 'Error updating display', error: err });
+                });
+            }
+
+            // Commit the transaction if the query is successful
+            const commitQuery = `COMMIT`;
+            connection.query(commitQuery, function(commitErr) {
+                if (commitErr) {
+                    console.error('Error committing transaction:', commitErr);
+                    return res.status(500).send({ message: 'Error committing transaction', error: commitErr });
+                }
+                console.log('Transaction committed successfully.');
+                res.send({ message: 'Display info updated successfully' });
+            });
+        });
     });
 });
 
+// Endpoint to delete a display item with transaction
 app.post('/api/display/delete/:id', function(req, res) {
     const displayId = req.params.id;
     const sql = 'DELETE FROM display WHERE id = ?';
-    connection.query(sql, [displayId], function(err, result) {
+
+    // Begin a transaction
+    const startTransactionQuery = `START TRANSACTION`;
+    connection.query(startTransactionQuery, function(err) {
         if (err) {
-            console.error('Error deleting display info:', err);
-            return res.status(500).send({ message: 'Error deleting display info', error: err });
+            console.error('Error beginning transaction:', err);
+            return res.status(500).send({ message: 'Error beginning transaction', error: err });
         }
-        res.send({ message: 'Display info deleted successfully' });
+
+        connection.query(sql, [displayId], function(err, result) {
+            if (err) {
+                console.error('Error deleting display info:', err);
+
+                // Rollback the transaction if there's an error
+                const rollbackQuery = `ROLLBACK`;
+                connection.query(rollbackQuery, function(rollbackErr) {
+                    if (rollbackErr) {
+                        console.error('Error rolling back transaction:', rollbackErr);
+                    }
+                    console.error('Transaction rolled back.');
+                    return res.status(500).send({ message: 'Error deleting display info', error: err });
+                });
+            }
+
+            // Commit the transaction if the query is successful
+            const commitQuery = `COMMIT`;
+            connection.query(commitQuery, function(commitErr) {
+                if (commitErr) {
+                    console.error('Error committing transaction:', commitErr);
+                    return res.status(500).send({ message: 'Error committing transaction', error: commitErr });
+                }
+                console.log('Transaction committed successfully.');
+                res.send({ message: 'Display info deleted successfully' });
+            });
+        });
     });
 });
 
@@ -187,6 +274,7 @@ function calculategenre(response) {
     FROM display d
     JOIN title_to_genres tg on tg.tconst = d.tconst
     JOIN genres g ON tg.id = g.id
+    WHERE d.titleType = 'movie'
     GROUP BY generes
     ORDER BY GenreCount DESC;
     `;
@@ -212,6 +300,7 @@ function calculatedirector(response) {
     FROM display d
     JOIN title_to_crew tg on tg.titleconst = d.tconst
     JOIN crew c ON tg.directors = c.nconst
+    WHERE d.titleType = 'movie'
     GROUP BY c.nconst
     ORDER BY WatchCount DESC
     LIMIT 15;

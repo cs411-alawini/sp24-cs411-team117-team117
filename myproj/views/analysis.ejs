@@ -58,7 +58,7 @@
 
 			    // Display total runtime information outside the data-container
 			    let totalRuntimeContent = '<h2>Total Runtime</h2>';
-			    totalRuntimeContent += '<p><span style="color: white; font-size: 18px;">You watched </span><span style="color: #e50914; font-size: 18px;">' + totalRuntime + ' minutes</span></p>';
+			    totalRuntimeContent += '<p><span style="color: white; font-size: 26px;">You have watched </span><span style="color: #e50914; font-size: 28px;">' + totalRuntime + ' minutes of Netflix </span></p>';
 			    $('#totalRuntimeInfo').html(totalRuntimeContent);
 
 			    // Populate runtimeData container with individual runtime data
@@ -125,11 +125,11 @@
                     method: 'GET',
                     success: function(data) {
 
-var firstEntry = data[0];
-var tvShowTitle = firstEntry.primarytitle;
+                    var firstEntry = data[0];
+                    var tvShowTitle = firstEntry.primarytitle;
 
-// Inserting the information into the desired location
-$('#firstBingedTvInfo').html('<span style="color: white; font-size: 24px;">You loved watching </span><span style="color: #e50914; font-size: 24px;">"' + tvShowTitle + '"</span>');
+                    // Inserting the information into the desired location
+                    $('#firstBingedTvInfo').html('<span style="color: white; font-size: 28px;">You have Binged </span><span style="color: #e50914; font-size: 28px;">"' + tvShowTitle + '"</span>');
                         let content = '<h2>You loved watching ' + data[0].primarytitle + '</h2>'; // First entry of the query result
                         content += '<table class="data-table"><tr><th>Title</th><th>Total Time (min)</th><th>Number of Episodes</th></tr>';
                         data.forEach(function(item) {
@@ -150,7 +150,7 @@ $('#firstBingedTvInfo').html('<span style="color: white; font-size: 24px;">You l
         	var title = firstEntry.generes; // Assuming the genre is stored in the 'generes' field
 
        	 	// Inserting the information into the desired location
-        $('#firstEntryInfo').html('<span style="color: white; font-size: 24px;">You love watching </span><span style="color: #e50914; font-size: 24px;">' + title + '</span>');
+        $('#firstEntryInfo').html('<span style="color: white; font-size: 28px;">The genere you find comforting </span><span style="color: #e50914; font-size: 28px;">' + title + '</span>');
 			let content = '<h2>Most Watched Genres</h2>';
                         content += '<table class="data-table"><tr><th>Genre</th><th>Count</th></tr>';
                         data.forEach(function(item) {
@@ -171,7 +171,7 @@ $('#firstBingedTvInfo').html('<span style="color: white; font-size: 24px;">You l
 	        var directorName = firstEntry.primaryName;
 
 	        // Inserting the information into the desired location
-	        $('#firstDirectorInfo').html('<span style="color: white; font-size: 24px;">You love watching movies directed by </span><span style="color: #e50914; font-size: 24px;">' + directorName + '</span>');
+	        $('#firstDirectorInfo').html('<span style="color: white; font-size: 28px;">Your favourite director is </span><span style="color: #e50914; font-size: 28px;">' + directorName + '</span>');
         
                     let content = '<h2>Most Enjoyed Directors</h2>';
                     content += '<table class="data-table"><tr><th>Director</th><th>Number of Times Watched</th></tr>';
