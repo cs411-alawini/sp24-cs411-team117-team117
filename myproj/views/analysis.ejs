@@ -18,21 +18,25 @@
         </div>
     </div>
     <div class="container">
+	<div id="totalRuntimeInfo"></div>
         <div class="data-container" >
             <div id="runtimeData"></div>
         </div>
     </div>
     <div class="container">
+	<div id="firstBingedTvInfo"></div>
         <div class="data-container">
             <div id="bingedTvData"></div>
         </div>
     </div>
-    <div class="container">
-        <div class="data-container">
-            <div id="genreData"></div>
-        </div>
+<div class="container">
+    <div id="firstEntryInfo"></div>
+    <div class="data-container">
+        <div id="genreData"></div>
     </div>
+</div>
     <div class="container">
+<div id="firstDirectorInfo"></div>
         <div class="data-container">
             <div id="directorData"></div>
         </div> 
@@ -50,13 +54,20 @@
                 url: '/api/runtime',
                 method: 'GET',
                 success: function(data) {
-                    let content = '<table class="data-table"><tr><th>Year</th><th>Type</th><th>Total Time (min)</th></tr>';
-                    data.forEach(function(item) {
-                        content += `<tr><td>${item.year}</td><td>${item.titleType}</td><td>${item.totaltime}</td></tr>`;
-                    });
-                    content += '</table>';
-                    $('#runtimeData').html(content);
-                    
+		      let totalRuntime = data.reduce((acc, item) => acc + parseInt(item.totaltime), 0);
+
+			    // Display total runtime information outside the data-container
+			    let totalRuntimeContent = '<h2>Total Runtime</h2>';
+			    totalRuntimeContent += '<p><span style="color: white; font-size: 18px;">You watched </span><span style="color: #e50914; font-size: 18px;">' + totalRuntime + ' minutes</span></p>';
+			    $('#totalRuntimeInfo').html(totalRuntimeContent);
+
+			    // Populate runtimeData container with individual runtime data
+			    let content = '<table class="data-table"><tr><th>Year</th><th>Type</th><th>Total Time (min)</th></tr>';
+			    data.forEach(function(item) {
+			        content += `<tr><td>${item.year}</td><td>${item.titleType}</td><td>${item.totaltime}</td></tr>`;
+			    });
+			    content += '</table>';
+			    $('#runtimeData').html(content);
                     // Prepare data for the chart
                     var types = data.map(item => item.titleType);
                     var totalTimes = data.map(item => item.totaltime);
@@ -113,6 +124,12 @@
                     url: '/api/binged_tv',
                     method: 'GET',
                     success: function(data) {
+
+var firstEntry = data[0];
+var tvShowTitle = firstEntry.primarytitle;
+
+// Inserting the information into the desired location
+$('#firstBingedTvInfo').html('<span style="color: white; font-size: 24px;">You loved watching </span><span style="color: #e50914; font-size: 24px;">"' + tvShowTitle + '"</span>');
                         let content = '<h2>You loved watching ' + data[0].primarytitle + '</h2>'; // First entry of the query result
                         content += '<table class="data-table"><tr><th>Title</th><th>Total Time (min)</th><th>Number of Episodes</th></tr>';
                         data.forEach(function(item) {
@@ -129,7 +146,12 @@
                     url: '/api/genre',
                     method: 'GET',
                     success: function(data) {
-                        let content = '<h2>Most Watched Genres</h2>';
+                        var firstEntry = data[0];
+        	var title = firstEntry.generes; // Assuming the genre is stored in the 'generes' field
+
+       	 	// Inserting the information into the desired location
+        $('#firstEntryInfo').html('<span style="color: white; font-size: 24px;">You love watching </span><span style="color: #e50914; font-size: 24px;">' + title + '</span>');
+			let content = '<h2>Most Watched Genres</h2>';
                         content += '<table class="data-table"><tr><th>Genre</th><th>Count</th></tr>';
                         data.forEach(function(item) {
                             content += `<tr><td>${item.generes}</td><td>${item.GenreCount}</td></tr>`;
@@ -145,6 +167,12 @@
                 url: '/api/director',
                 method: 'GET',
                 success: function(data) {
+                     var firstEntry = data[0];
+	        var directorName = firstEntry.primaryName;
+
+	        // Inserting the information into the desired location
+	        $('#firstDirectorInfo').html('<span style="color: white; font-size: 24px;">You love watching movies directed by </span><span style="color: #e50914; font-size: 24px;">' + directorName + '</span>');
+        
                     let content = '<h2>Most Enjoyed Directors</h2>';
                     content += '<table class="data-table"><tr><th>Director</th><th>Number of Times Watched</th></tr>';
                     data.forEach(function(item) {

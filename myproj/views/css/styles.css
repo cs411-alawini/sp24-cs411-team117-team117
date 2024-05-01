@@ -225,3 +225,8 @@ canvas {
     border-radius: 4px;
     border: 1px solid #ccc;
 }
+#firstEntryInfo {
+    font-size: 24px; /* Adjust the font size as needed */
+    color: #e50914; /* Netflix red */
+    margin-bottom: 20px; /* Add some spacing below the title */
+}
