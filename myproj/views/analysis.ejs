@@ -11,40 +11,47 @@
         <h1><span class="netflix">Netflix</span> <span class="wrapped">Wrapped</span></h1>
     </div>
 
-
     <div class="container">
         <div class="chart-container">
             <canvas id="runtimeChart"></canvas>
         </div>
     </div>
+
     <div class="container">
-	<div id="totalRuntimeInfo"></div>
-        <div class="data-container" >
+	    <div id="totalRuntimeInfo"></div>
+        <div class="data-container">
             <div id="runtimeData"></div>
         </div>
     </div>
+
     <div class="container">
-	<div id="firstBingedTvInfo"></div>
+        <div id="bingedTvChartContainer">
+            <canvas id="bingedTvChart" width="800" height="400"></canvas>
+        </div>
+    </div>
+    
+    <div class="container">
+	    <div id="firstBingedTvInfo"></div>
         <div class="data-container">
             <div id="bingedTvData"></div>
         </div>
     </div>
-<div class="container">
-    <div id="firstEntryInfo"></div>
-    <div class="data-container">
-        <div id="genreData"></div>
-    </div>
-</div>
+
+  
+
     <div class="container">
-<div id="firstDirectorInfo"></div>
+        <div id="firstEntryInfo"></div>
+        <div class="data-container">
+            <div id="genreData"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="firstDirectorInfo"></div>
         <div class="data-container">
             <div id="directorData"></div>
         </div> 
     </div>
-
-        
-    </div>
-    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -82,17 +89,17 @@
                                 label: 'Total Time (min)',
                                 data: totalTimes,
                                 backgroundColor: [
-                                    'rgba(255, 99, 132, 0.5)',
-                                    'rgba(54, 162, 235, 0.5)',
-                                    'rgba(255, 206, 86, 0.5)',
+                                'rgba(229, 9, 20, 0.5)',  // Netflix red with alpha (transparency) of 0.5
+                                'rgba(54, 162, 235, 0.5)', // Sample blue color
+                                'rgba(255, 206, 86, 0.5)',
                                     'rgba(75, 192, 192, 0.5)',
                                     'rgba(153, 102, 255, 0.5)',
                                     'rgba(255, 159, 64, 0.5)'
                                 ],
                                 borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(229, 9, 20, 1)',   // Solid Netflix red
+                                    'rgba(54, 162, 235, 1)', // Solid blue color
+                                    'rgba(255, 206, 86, 1)', // Solid yellow color
                                     'rgba(75, 192, 192, 1)',
                                     'rgba(153, 102, 255, 1)',
                                     'rgba(255, 159, 64, 1)'
@@ -121,27 +128,69 @@
                 }
             });
             $.ajax({
-                    url: '/api/binged_tv',
-                    method: 'GET',
-                    success: function(data) {
+    url: '/api/binged_tv',
+    method: 'GET',
+    success: function(data) {
+        // Prepare data for the bar graph
+        var titles = data.map(item => item.primarytitle);
+        var totalTimes = data.map(item => item.totaltime);
 
-                    var firstEntry = data[0];
-                    var tvShowTitle = firstEntry.primarytitle;
-
-                    // Inserting the information into the desired location
-                    $('#firstBingedTvInfo').html('<span style="color: white; font-size: 28px;">You have Binged </span><span style="color: #e50914; font-size: 28px;">"' + tvShowTitle + '"</span>');
-                        let content = '<h2>You loved watching ' + data[0].primarytitle + '</h2>'; // First entry of the query result
-                        content += '<table class="data-table"><tr><th>Title</th><th>Total Time (min)</th><th>Number of Episodes</th></tr>';
-                        data.forEach(function(item) {
-                            content += `<tr><td>${item.primarytitle}</td><td>${item.totaltime}</td><td>${item.number_of_eps}</td></tr>`;
-                        });
-                        content += '</table>';
-                        $('#bingedTvData').html(content);
+        // Create the bar graph
+        var ctx = document.getElementById('bingedTvChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: titles,
+                datasets: [{
+                    label: 'Total Time (min)',
+                    data: totalTimes,
+                    backgroundColor: 'rgba(229, 9, 20, 0.5)',
+                    borderColor: 'rgba(229, 9, 20, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Binged TV Shows'
                     },
-                    error: function() {
-                        $('#bingedTvData').html('<p>No data found for binged TV shows.</p>');
+                    legend: {
+                        display: false
                     }
-                });
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 10,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+
+        // Display additional data outside the chart
+        var firstEntry = data[0];
+        var tvShowTitle = firstEntry.primarytitle;
+        $('#firstBingedTvInfo').html('<span style="color: white; font-size: 28px;">You have Binged </span><span style="color: #e50914; font-size: 28px;">"' + tvShowTitle + '"</span>');
+
+        var content = '<h2>You loved watching ' + data[0].primarytitle + '</h2>'; // First entry of the query result
+        content += '<table class="data-table"><tr><th>Title</th><th>Total Time (min)</th><th>Number of Episodes</th></tr>';
+        data.forEach(function(item) {
+            content += `<tr><td>${item.primarytitle}</td><td>${item.totaltime}</td><td>${item.number_of_eps}</td></tr>`;
+        });
+        content += '</table>';
+        $('#bingedTvData').html(content);
+    },
+    error: function() {
+        $('#bingedTvData').html('<p>No data found for binged TV shows.</p>');
+    }
+});
+
+
             $.ajax({
                     url: '/api/genre',
                     method: 'GET',
