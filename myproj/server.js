@@ -85,7 +85,7 @@ app.get('/api/display', function(req, res) {
 
 // Endpoint to add a new display item with transaction
 app.post('/api/display/add', function(req, res) {
-    const { tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id } = req.body;
+    const { id,tconst, primaryTitle, runtimeMinutes, Season, Date, titleType } = req.body;
 
     // Begin a transaction
     const startTransactionQuery = `START TRANSACTION`;
@@ -95,8 +95,8 @@ app.post('/api/display/add', function(req, res) {
             return res.status(500).send({ message: 'Error beginning transaction', error: err });
         }
 
-        const sql = 'INSERT INTO display (id, tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        connection.query(sql, [tconst, primaryTitle, runtimeMinutes, Season, Episode, Date, titleType, id], function(err, result) {
+        const sql = 'INSERT INTO display (id, tconst, primaryTitle, runtimeMinutes, Season, Date, titleType) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        connection.query(sql, [id, tconst, primaryTitle, runtimeMinutes, Season, Date, titleType], function(err, result) {
             if (err) {
                 console.error('Error adding to display:', err);
 

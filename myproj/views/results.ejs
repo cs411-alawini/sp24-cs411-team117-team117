@@ -157,17 +157,17 @@
             }
             $(document).ready(function() {
             // Add Button Click Event
-            $('#addButton').click(function() {
+            $('#addButton').click(function() { 
             // Open dialogue box for adding a new item
             var modalContent = '<div class="modal-content">' +
                 '<span class="close">&times;</span>' +
+                '<input type="text" id="addId" placeholder="ID">' +
                 '<input type="text" id="addTconst" placeholder="Tconst">' +
                 '<input type="text" id="addTitle" placeholder="Title">' +
                 '<input type="number" id="addRuntime" placeholder="Runtime (minutes)">' +
                 '<input type="text" id="addSeason" placeholder="Season">' +
                 '<input type="text" id="addDate" placeholder="Date">' +
                 '<input type="text" id="addTitleType" placeholder="Title Type">' +
-                '<input type="text" id="addId" placeholder="ID">' +
                 '<button id="submitAdd" class="button">Add</button>' +
                 '</div>';
             
@@ -193,7 +193,7 @@
                     url: '/api/display/add',
                     method: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ tconst: tconst, primaryTitle: title, runtimeMinutes: runtime, Season: season, Date: date, titleType: titleType }),
+                    data: JSON.stringify({ id: id, tconst: tconst, primaryTitle: title, runtimeMinutes: runtime, Season: season, Date: date, titleType: titleType }),
                     success: function(response) {
                         loadDisplayInfo();
                         alert('Display info added successfully');
